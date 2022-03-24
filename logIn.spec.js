@@ -1,102 +1,84 @@
 import * as logInHelpers from './logInHelpers'
 
-beforeEach(() => {
-    cy.visit('http://automationpractice.com/index.php?controller=authentication&back=my-account')
-    cy.get('.page-heading').contains('Authentication')
-})
+const validEmail = 's11819108@stu.najah.edu'
+const validLoginEmail = 'sarasaffarini.35@gmail.com'
+const invalidEmail = 's1'
+const existingEmail = 'sarasaffarini.35@gmail.com'
+const validPassword = 'sara289289'
+const invalidPassword = 's'
+const blankEmail = '{ALT}'
+const blankPassword = '{Alt}'
+const invalidEmailErrorMsg = 'Invalid email address.'
+const invalidPasswordErrorMsg = 'Invalid password.'
+const existingEmailErrorMsg = 'An account using this email address has already been registered. Please enter a valid password or request a new one. '
+const requiredEmailErrorMsg = 'An email address required.'
+const requiredPasswordErrorMsg = 'Password is required.'
 
-//CREATE AN ACCOUNT FEILD
+context('LogIn Page', () => {
+    beforeEach(() => {
+        cy.visit('http://automationpractice.com/index.php?controller=authentication&back=my-account')
+        cy.get('.page-heading').contains('Authentication')
+    })
 
-//creating an account using a valid email address.
-it('Create an account using a valid email', () => {
-    logInHelpers.verifyArea(logInHelpers.LOCATORS.createAccountHeader, logInHelpers.LOCATORS.createAccountHeaderValue)
-    logInHelpers.insertText(logInHelpers.LOCATORS.emailCreateBtn, 's11819108@stu.najah.edu')
-    logInHelpers.createAccountBtn()
-})
+    //CREATE AN ACCOUNT FEILD
 
-//creating an account using an in-valid email address.
-it('Create an account using an in-valid email', () => {
-    logInHelpers.verifyArea(logInHelpers.LOCATORS.createAccountHeader, logInHelpers.LOCATORS.createAccountHeaderValue)
-    logInHelpers.insertText(logInHelpers.LOCATORS.emailCreateBtn, 's1')
-    logInHelpers.createAccountBtn()
-    logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.createAccountError,'Invalid email address.')
-})
+    it('Create an account using a valid email', () => {
+        logInHelpers.createAccount(validEmail, true)
+    })
 
-//creating an account using an already existing email address.
-it('Create an account using an already existing email', () => {
-    logInHelpers.verifyArea(logInHelpers.LOCATORS.createAccountHeader, logInHelpers.LOCATORS.createAccountHeaderValue)
-    logInHelpers.insertText(logInHelpers.LOCATORS.emailCreateBtn, 'sarasaffarini.35@gmail.com')
-    logInHelpers.createAccountBtn()
-    logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.createAccountError,'An account using this email address has already been registered. Please enter a valid password or request a new one. ')
-})
+    it('Create an account using an in-valid email', () => {
+        logInHelpers.createAccount(invalidEmail, false)
+        logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.createAccountError, invalidEmailErrorMsg)
+    })
 
-//creating an account while leaving the email address field blank.**
-it('Create an account with blank email field', () => {
-    logInHelpers.verifyArea(logInHelpers.LOCATORS.createAccountHeader, logInHelpers.LOCATORS.createAccountHeaderValue)
-    logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.createAccountError,'Invalid email address.')
-})
+    it('Create an account using an already existing email', () => {
+        logInHelpers.createAccount(existingEmail,false)
+        logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.createAccountError, existingEmailErrorMsg)
+    })
 
-//LOG IN FEILD
+    it('Create an account with blank email field', () => {
+        logInHelpers.createAccount(blankEmail,false)
+        logInHelpers.verifyArea(logInHelpers.LOCATORS.createAccountHeader, logInHelpers.LOCATORS.createAccountHeaderValue)
+        logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.createAccountError, invalidEmailErrorMsg)
+    })
 
-//Log in using a valid email and valid password
-it('Log in using a valid email and valid password', () => {
-    logInHelpers.verifyArea(logInHelpers.LOCATORS.logInHeader, logInHelpers.LOCATORS.logInHeaderValue)
-    logInHelpers.insertText(logInHelpers.LOCATORS.logInEmail, 'sarasaffarini.35@gmail.com')
-    logInHelpers.insertText(logInHelpers.LOCATORS.logInPassword, 'sara289289')
-    logInHelpers.logInBtn()
-})
+    //LOG IN FEILD
 
-//Log in using a valid email and in-valid password
-it('Log in using a valid email and in-valid password', () => {
-    logInHelpers.verifyArea(logInHelpers.LOCATORS.logInHeader, logInHelpers.LOCATORS.logInHeaderValue)
-    logInHelpers.insertText(logInHelpers.LOCATORS.logInEmail, 'sarasaffarini.35@gmail.com')
-    logInHelpers.insertText(logInHelpers.LOCATORS.logInPassword, 's')
-    logInHelpers.logInBtn()
-    logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.logInError,'Invalid password.')
-})
+    it('Log in using a valid email and valid password', () => {
+        logInHelpers.loginByEmail(validLoginEmail, validPassword, true)
+    })
 
-//Log in using an in-valid email and a valid password
-it('Log in using an in-valid email and valid password', () => {
-    logInHelpers.verifyArea(logInHelpers.LOCATORS.logInHeader, logInHelpers.LOCATORS.logInHeaderValue)
-    logInHelpers.insertText(logInHelpers.LOCATORS.logInEmail, 's')
-    logInHelpers.insertText(logInHelpers.LOCATORS.logInPassword, 'sara289289')
-    logInHelpers.logInBtn()
-    logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.logInError,'Invalid email address.')
-})
+    it('Log in using a valid email and in-valid password', () => {
+        logInHelpers.loginByEmail(validLoginEmail, invalidPassword, false)
+        logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.logInError, invalidPasswordErrorMsg)
+    })
 
-//Log in using an in-valid email and an in-valid password
-it('Log in using an in-valid email and an in-valid password', () => {
-    logInHelpers.verifyArea(logInHelpers.LOCATORS.logInHeader, logInHelpers.LOCATORS.logInHeaderValue)
-    logInHelpers.insertText(logInHelpers.LOCATORS.logInEmail, 's')
-    logInHelpers.insertText(logInHelpers.LOCATORS.logInPassword, 's')
-    logInHelpers.logInBtn()
-    logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.logInError,'Invalid email address.')
-})
+    it('Log in using an in-valid email and valid password', () => {
+        logInHelpers.loginByEmail(invalidEmail, validPassword,false)
+        logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.logInError, invalidEmailErrorMsg)
+    })
 
-//Log in while leaving both the email and password feilds empty
-it('Log in while leaving both the email and password feilds empty', () => {
-    logInHelpers.verifyArea(logInHelpers.LOCATORS.logInHeader, logInHelpers.LOCATORS.logInHeaderValue)
-    logInHelpers.logInBtn()
-    logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.logInError,'An email address required.')
-})
+    it('Log in using an in-valid email and an in-valid password', () => {
+        logInHelpers.loginByEmail(invalidEmail, invalidPassword,false)
+        logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.logInError, invalidEmailErrorMsg)
+    })
 
-//Log in while leaving only the email feild empty 
-it('Log in while leaving the email feild empty', () => {
-    logInHelpers.verifyArea(logInHelpers.LOCATORS.logInHeader, logInHelpers.LOCATORS.logInHeaderValue)
-    logInHelpers.insertText(logInHelpers.LOCATORS.logInPassword, 'sara289289')
-    logInHelpers.logInBtn()
-    logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.logInError,'An email address required.')
-})
+    it('Log in while leaving both the email and password feilds empty', () => {
+        logInHelpers.loginByEmail(blankEmail, blankPassword,false)
+        logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.logInError, requiredEmailErrorMsg)
+    })
 
-//Log in while leaving only the password feild empty 
-it('Log in while leaving the password feild empty', () => {
-    logInHelpers.verifyArea(logInHelpers.LOCATORS.logInHeader, logInHelpers.LOCATORS.logInHeaderValue)
-    logInHelpers.insertText(logInHelpers.LOCATORS.logInEmail, 'sarasaffarini.35@gmail.com',)
-    logInHelpers.logInBtn()
-    logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.logInError,'Password is required.')
-})
+    it('Log in while leaving the email feild empty', () => {
+        logInHelpers.loginByEmail(blankEmail, validPassword,false)
+        logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.logInError, requiredEmailErrorMsg)
+    })
 
-//Forget password button 
-it('Click on forget password button', () => {
-   cy.get('.lost_password > a').click()
+    it('Log in while leaving the password feild empty', () => {
+        logInHelpers.loginByEmail(validEmail, blankPassword,false)
+        logInHelpers.verifyErrorMsg(logInHelpers.LOCATORS.logInError, requiredPasswordErrorMsg)
+    })
+
+    it('Click on forget password button', () => {
+        cy.get('.lost_password > a').click()
+    })
 })
